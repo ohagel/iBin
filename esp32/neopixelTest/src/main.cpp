@@ -14,7 +14,7 @@ void setup() {
   pixels.begin();
   //set all to blue in for loop
   for(int i=0; i<NUMPIXELS; i++){
-    pixels.setPixelColor(i, pixels.Color(0,0,255));
+    pixels.setPixelColor(i, pixels.Color(255,0,0));
     pixels.show();
     
   }
