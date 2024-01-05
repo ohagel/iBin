@@ -9,3 +9,6 @@ Din  <- d32
 
 A3144
 Dout -> d27
+
+
+test hej
