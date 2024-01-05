@@ -1,0 +1,11 @@
+Device -- esp32
+
+HX711
+SCK  -> d4
+DT   -> d5
+
+WS2812b
+Din  <- d32
+
+A3144
+Dout -> d27
