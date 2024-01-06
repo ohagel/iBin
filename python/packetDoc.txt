@@ -1,0 +1,3 @@
+[get/set][addr][data]
+[0/1][0-255][?]
+[1byte][1byte][4byte]
