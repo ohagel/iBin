@@ -11,6 +11,7 @@ class iBinCom:
             return True
         try:
             self.ser = serial.Serial(self.port, self.baudrate)
+            self.opened = True
             return True
         except:
             return False
@@ -19,9 +20,25 @@ class iBinCom:
         if self.opened:
             self.ser.close()
 
-    def setLight(self, light):
+    def sendPacket(self, type, addr, data):
         if self.opened:
-            pass
+            data = data.to_bytes(4, byteorder='big')
+            bytePacket = bytearray([type,addr,data[0],data[1],data[2],data[3]])
+            print(bytePacket)
+            self.ser.write(bytePacket)
+
+    def recivePacket(self):
+        if self.opened:
+            recvData = self.ser.read(6)
+            print(recvData)
+            return int.from_bytes(recvData[2:], byteorder='big')
+
+    def setLight(self, state):
+        if self.opened:
+            if state:
+                self.sendPacket(1, 2, 255)
+            else:
+                self.sendPacket(1, 2, 0)
 
     def getWeight(self):
         if self.opened:
@@ -29,7 +46,9 @@ class iBinCom:
         
     def getLid(self):
         if self.opened:
-            pass
+            self.sendPacket(0, 0, 0)
+            return self.recivePacket()
+
 
     def test(self):
         print("test")
