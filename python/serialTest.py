@@ -1,14 +1,20 @@
 from iBinCom import iBinCom
 import time
 
+light = True
+
 com = iBinCom("COM3", 115200)
 ret = com.open()
+time.sleep(1)
 if ret:
     print("open success")
     com.setLight(True)
     time.sleep(1)
     com.setLight(False)
-    print(com.getLid())
+    while True:
+        com.setLight(light)
+        light = not light
+        print(com.getLid(),com.getWeight())
 com.close()
 
 #val = 11111112

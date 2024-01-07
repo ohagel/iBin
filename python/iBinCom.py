@@ -24,14 +24,14 @@ class iBinCom:
         if self.opened:
             data = data.to_bytes(4, byteorder='big')
             bytePacket = bytearray([type,addr,data[0],data[1],data[2],data[3]])
-            print(bytePacket)
+            #print(bytePacket)
             self.ser.write(bytePacket)
 
     def recivePacket(self):
         if self.opened:
             recvData = self.ser.read(6)
-            print(recvData)
-            return int.from_bytes(recvData[2:], byteorder='big')
+            #print(recvData)
+            return int.from_bytes(recvData[2:], byteorder='big', signed=True)
 
     def setLight(self, state):
         if self.opened:
@@ -42,7 +42,8 @@ class iBinCom:
 
     def getWeight(self):
         if self.opened:
-            pass
+            self.sendPacket(0, 1, 0)
+            return self.recivePacket()
         
     def getLid(self):
         if self.opened:
