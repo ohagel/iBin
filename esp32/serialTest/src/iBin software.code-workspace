@@ -4,14 +4,6 @@
 			"path": "../../.."
 		},
 		{
-			"name": "hallTest",
-			"path": "../../hallTest"
-		},
-		{
-			"name": "combinedTest",
-			"path": "../../combinedTest"
-		},
-		{
 			"name": "serialTest",
 			"path": ".."
 		}
