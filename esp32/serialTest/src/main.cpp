@@ -21,6 +21,9 @@ void setup() {
   pixels.begin();
   pixels.show();
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
+  float calibrationfactor = (62860)/(170);
+  scale.set_scale(calibrationfactor);
+  scale.tare();
   Serial.begin(115200);
 }
 
@@ -49,7 +52,7 @@ void loop() {
       break;
     case 1:
       if (!recvData[0]) {
-        values[1] = scale.read_average(5);
+        values[1] = (int)scale.get_units(5);
         byte buf[] = {0, 0, values[1]>>24, values[1]>>16, values[1]>>8, values[1]};
         Serial.write(buf, 6);
       }

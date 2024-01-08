@@ -14,7 +14,7 @@ void setup() {
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
   float calibrationfactor = (62860)/(170);
   scale.set_scale(calibrationfactor);
-  scale.tare(); 
+  scale.tare();
   
 
 }
