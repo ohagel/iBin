@@ -12,12 +12,20 @@ void setup() {
   Serial.begin(115200);
   
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
+  float calibrationfactor = (62860)/(170);
+  scale.set_scale(calibrationfactor);
+  scale.tare(); 
+  
+
 }
 
 void loop() {
 
-  Serial.print("read average: \t\t");
-  Serial.println(scale.read_average(5)); 
+  Serial.println("read average: \t\t");
+  Serial.print("raw: \t\t\t\t");
+  Serial.println(scale.read_average(5)); //raw
+  Serial.print("calibrated: \t\t\t");
+  Serial.println(scale.get_units(5), 1); //calibrated
   
 }
 
