@@ -34,8 +34,10 @@ class TrashDataset(Dataset):
         currClass = int(self.data.iloc[idx, 2])
         #weight = np.array([weight], dtype=float)#.reshape(-1, 2)
         sample = {'image': image, 'weight': weight, 'class': currClass}
+        #sample = [image, weight, currClass]
 
         if self.transform:
-            sample = self.transform(sample)
+            #sample = self.transform(sample)
+            sample['image'] = self.transform(sample['image'])
 
         return sample

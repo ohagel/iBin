@@ -15,8 +15,11 @@ if __name__ == '__main__':
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print(device)
 
-    batch_size = 4
-    trainset = TrashDataset(csvFile='dataset/labels.txt', root_dir='dataset', transform=None)
+    batch_size = 1
+    transform = transforms.Compose([transforms.ToTensor()])
+
+    trainset = TrashDataset(csvFile='dataset/labels.txt', root_dir='dataset', transform=transform)
+    
     trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
 
     class Net(nn.Module):
@@ -25,7 +28,7 @@ if __name__ == '__main__':
             self.conv1 = nn.Conv2d(3, 6, 5)
             self.pool = nn.MaxPool2d(2, 2)
             self.conv2 = nn.Conv2d(6, 16, 5)
-            self.fc1 = nn.Linear(16 * 118 * 118, 120)
+            self.fc1 = nn.Linear(16 * 117 * 117, 120)
             self.fc2 = nn.Linear(120, 84)
             self.fc3 = nn.Linear(84, 4)
 
@@ -50,6 +53,7 @@ if __name__ == '__main__':
         for i, data in enumerate(trainloader, 0):
 
             imgs, weight, labels = data['image'].to(device), data['weight'].to(device), data['class'].to(device)
+            #imgs, weight, labels = data[0].to(device), data[1].to(device), data[2].to(device)
             print('THIS IS IT INPUTS')
             print(imgs.shape)
             print('THIS IS IT WEIGHTS')
@@ -61,6 +65,7 @@ if __name__ == '__main__':
             outputs = net(imgs, weight)
             print('THIS IS IT OUTPUTS')
             print(outputs)
+            quit()
             #loss = criterion(outputs, labels)
             #loss.backward()
             #optimizer.step()
