@@ -9,6 +9,7 @@ import torch.optim as optim
 import os
 from trashDataset import TrashDataset
 from torch.utils.data import DataLoader, SubsetRandomSampler
+#import cv2
 #os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 if __name__ == '__main__':
@@ -20,7 +21,7 @@ if __name__ == '__main__':
     device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
     print(device)
 
-    batch_size =8
+    batch_size = 8
     transform = transforms.Compose([transforms.ToTensor()])
 
     trainset = TrashDataset(csvFile='dataset/labels.txt', root_dir='dataset', transform=transform)
@@ -101,13 +102,25 @@ if __name__ == '__main__':
 
     #optimizer = optim.Adam(net.parameters(), lr=0.001)
 
-    for epoch in range(10):  # loop over the dataset multiple times
+    for epoch in range(5):  # loop over the dataset multiple times
 
         running_loss = 0.0
         for i, data in enumerate(train_loader, 0):
 
             imgs, weight, labels = data['image'].to(device), data['weight'].to(device), data['class'].to(device)
-        
+
+            """print("shape", imgs.cpu().numpy().shape)
+            img = imgs[0].cpu().numpy()
+            img = np.transpose(img, (1, 2, 0))
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+            img = cv2.normalize(img, None, 0, 255, norm_type=cv2.NORM_MINMAX, dtype=cv2.CV_8U)
+            print("dtype", img.dtype)
+            print("max", np.max(img))
+            print("min", np.min(img))
+            print(img.shape)
+            cv2.imshow('image', img)
+            cv2.waitKey(0)
+            quit()"""
 
             optimizer.zero_grad()
             outputs = net(imgs, weight)
