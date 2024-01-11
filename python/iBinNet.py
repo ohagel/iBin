@@ -99,7 +99,8 @@ class Net(nn.Module):
         def train(self, n_epochs):
             criterion = nn.CrossEntropyLoss()
             self.to(self.device)
-            optimizer = optim.SGD(self.parameters(), lr=0.001, momentum=0.9)
+            #optimizer = optim.SGD(self.parameters(), lr=0.001, momentum=0.9)
+            optimizer = optim.AdamW(self.parameters(), lr=0.001)
 
             for epoch in range(n_epochs):  # loop over the dataset multiple times
 
@@ -121,6 +122,8 @@ class Net(nn.Module):
                     print(f'[{epoch + 1}, {i + 1:5d}] loss: {loss.item():.10f}')
                     
             print('Finished Training')
+            PATH = './iBin_net.pth'
+            torch.save(self.state_dict(), PATH)
 
         def validate(self):
             correct = 0
@@ -169,4 +172,5 @@ class Net(nn.Module):
             img = img.to(self.device)
             weight = weight.to(self.device)
             output = self(img, weight)
-            return output
+            _, predicted = torch.max(output.data, 1)
+            return predicted
