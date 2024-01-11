@@ -1,10 +1,22 @@
 import serial
+import time
+import os
+import cv2
+import numpy as np
 
 class iBinCom:
     def __init__(self, port, baudrate):
+
         self.opened = False
         self.port = port
         self.baudrate = baudrate
+        self.width = 640
+        self.height = 480
+        self.cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+        self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
+        self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
+
+        self.weight = 0
 
     def open(self):
         if self.opened:
@@ -53,3 +65,8 @@ class iBinCom:
 
     def test(self):
         print("test")
+
+    def getFrame(self):
+        ret, frame = self.cap.read()
+        frame = frame[:,int(self.width/2-self.height/2):int(width/2+height/2)]
+        return frame

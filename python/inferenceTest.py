@@ -35,8 +35,7 @@ if __name__ == '__main__':
 
     while True:
         iBin.setLight(not iBin.getLid())
-        ret, frame = cap.read()
-        frame = frame[:,int(width/2-height/2):int(width/2+height/2)]
+        frame = iBin.getFrame()
         cv2.imshow('Live view', frame)
         key = cv2.waitKey(1)
         if key == ord('q'):
