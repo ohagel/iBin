@@ -28,8 +28,8 @@ if __name__ == '__main__':
 
 
 
-    net.load('iBin_net.pth')
-    #net.train(10)
+    #net.load('iBin_net.pth')
+    net.train(100)
     net.validate()
 
 
@@ -41,9 +41,10 @@ if __name__ == '__main__':
         if key == ord('q'):
             break
         elif key == ord('1'):
+            #print("infer",frame.shape, type(frame), frame.dtype)
             weight = iBin.getWeight()
-            res = net.infer(frame, weight)
-            print(res)
+            res = net.infer(frame , weight)
+            print("res print",res)
 
     iBin.close()
     cap.release()

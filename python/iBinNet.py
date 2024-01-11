@@ -9,6 +9,7 @@ import torch.optim as optim
 import os
 from trashDataset import TrashDataset
 from torch.utils.data import DataLoader, SubsetRandomSampler
+import cv2
 
 class Net(nn.Module):
         
@@ -72,23 +73,25 @@ class Net(nn.Module):
             self.fc1 = nn.Linear(self.fc1_input_size, 120)
 
             self.fc2 = nn.Linear(120, 84)
-            self.fc3 = nn.Linear(84, 42)
-            self.fc4 = nn.Linear(42, 4)
+            self.fc3 = nn.Linear(84, 4)
+            #self.fc4 = nn.Linear(42, 4)
 
         def forward(self, img, weight):
             x = self.pool(F.relu(self.conv1(img)))
             x = self.pool(F.relu(self.conv2(x)))
+            #print("x shape before flatten",x.shape)
             x = torch.flatten(x, 1) # flatten all dimensions except batch
+            #print("x shape after flatten",x.shape)
     
             weight = weight.view(-1, 1)
-            print(x.shape,weight.shape)
+            #print(x.shape,weight.shape)
             x = torch.cat((x, weight), dim=1) #input weight to fc1
     
             x = F.relu(self.fc1(x))
             x = F.relu(self.fc2(x))
-            x = F.relu(self.fc3(x))
+            #x = F.relu(self.fc3(x))
             
-            x = self.fc4(x)
+            x = self.fc3(x)
             return x
         
         def calc_input_size(self, input_size, kerne_size, stride):
@@ -101,8 +104,8 @@ class Net(nn.Module):
         def train(self, n_epochs):
             criterion = nn.CrossEntropyLoss()
             self.to(self.device)
-            #optimizer = optim.SGD(self.parameters(), lr=0.001, momentum=0.9)
-            optimizer = optim.AdamW(self.parameters(), lr=0.001)
+            optimizer = optim.SGD(self.parameters(), lr=0.001, momentum=0.9)
+            #optimizer = optim.AdamW(self.parameters(), lr=0.001)
 
             for epoch in range(n_epochs):  # loop over the dataset multiple times
 
@@ -136,7 +139,7 @@ class Net(nn.Module):
 
                     imgs, weight, labels = data['image'].to(self.device), data['weight'].to(self.device), data['class'].to(self.device)
                     # calculate outputs by running images through the network
-                    print(imgs.shape, weight.shape)
+                    print("validate", imgs.shape, type(imgs), weight.shape, type(weight), weight.dtype ,weight)
                     outputs = self(imgs, weight)
                     # the class with the highest energy is what we choose as prediction
                     _, predicted = torch.max(outputs.data, 1)
@@ -170,12 +173,17 @@ class Net(nn.Module):
                 print(f'Accuracy for class: {classname:5s} is {accuracy:.1f} %')
 
         def infer(self, img, weight):
+            img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
             if not torch.is_tensor(img):
                 img = self.transform(img)
             if not torch.is_tensor(weight):
                 weight = torch.tensor(weight)
+            img = img.unsqueeze(0)
             img = img.to(self.device)
+            weight = weight.unsqueeze(0)
             weight = weight.to(self.device)
+            print("infer print",img.shape, type(img), weight.shape, type(weight), weight.dtype,weight)
             output = self(img, weight)
             _, predicted = torch.max(output.data, 1)
-            return predicted
+            #return predicted.cpu().data.numpy()[0]
+            return output.detach().cpu().numpy()

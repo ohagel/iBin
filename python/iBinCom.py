@@ -68,5 +68,5 @@ class iBinCom:
 
     def getFrame(self):
         ret, frame = self.cap.read()
-        frame = frame[:,int(self.width/2-self.height/2):int(width/2+height/2)]
+        frame = frame[:,int(self.width/2-self.height/2):int(self.width/2+self.height/2)]
         return frame

@@ -30,6 +30,7 @@ class TrashDataset(Dataset):
         img_name = os.path.join(self.root_dir,
                                 self.data.iloc[idx, 0]+'.png')
         image = io.imread(img_name)
+        #print("dataloader",image.shape, type(image), image.dtype)
         weight = int(self.data.iloc[idx, 1])
         currClass = int(self.data.iloc[idx, 2])
         #weight = np.array([weight], dtype=float)#.reshape(-1, 2)
