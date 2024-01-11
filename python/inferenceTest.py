@@ -28,7 +28,8 @@ if __name__ == '__main__':
 
 
 
-    net.load('model/ibinnet.pt')
+    net.load('iBin_net.pth')
+    #net.train(10)
     net.validate()
 
 

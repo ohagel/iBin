@@ -81,6 +81,7 @@ class Net(nn.Module):
             x = torch.flatten(x, 1) # flatten all dimensions except batch
     
             weight = weight.view(-1, 1)
+            print(x.shape,weight.shape)
             x = torch.cat((x, weight), dim=1) #input weight to fc1
     
             x = F.relu(self.fc1(x))
@@ -95,6 +96,7 @@ class Net(nn.Module):
         
         def load(self, model_path):
             self.load_state_dict(torch.load(model_path))
+            self.to(self.device)
         
         def train(self, n_epochs):
             criterion = nn.CrossEntropyLoss()
@@ -134,6 +136,7 @@ class Net(nn.Module):
 
                     imgs, weight, labels = data['image'].to(self.device), data['weight'].to(self.device), data['class'].to(self.device)
                     # calculate outputs by running images through the network
+                    print(imgs.shape, weight.shape)
                     outputs = self(imgs, weight)
                     # the class with the highest energy is what we choose as prediction
                     _, predicted = torch.max(outputs.data, 1)
@@ -169,6 +172,8 @@ class Net(nn.Module):
         def infer(self, img, weight):
             if not torch.is_tensor(img):
                 img = self.transform(img)
+            if not torch.is_tensor(weight):
+                weight = torch.tensor(weight)
             img = img.to(self.device)
             weight = weight.to(self.device)
             output = self(img, weight)
