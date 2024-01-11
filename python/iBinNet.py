@@ -22,7 +22,7 @@ class Net(nn.Module):
             pool_stride=2
             input_size=480
 
-            seed = 33
+            seed = 42
             torch.manual_seed(seed)
             np.random.seed(seed)
 
@@ -104,8 +104,8 @@ class Net(nn.Module):
         def train(self, n_epochs):
             criterion = nn.CrossEntropyLoss()
             self.to(self.device)
-            optimizer = optim.SGD(self.parameters(), lr=0.001, momentum=0.9)
-            #optimizer = optim.AdamW(self.parameters(), lr=0.001)
+            #optimizer = optim.SGD(self.parameters(), lr=0.001, momentum=0.9)
+            optimizer = optim.AdamW(self.parameters(), lr=0.001)
 
             for epoch in range(n_epochs):  # loop over the dataset multiple times
 
@@ -139,7 +139,7 @@ class Net(nn.Module):
 
                     imgs, weight, labels = data['image'].to(self.device), data['weight'].to(self.device), data['class'].to(self.device)
                     # calculate outputs by running images through the network
-                    print("validate", imgs.shape, type(imgs), weight.shape, type(weight), weight.dtype ,weight)
+                    #print("validate", imgs.shape, type(imgs), weight.shape, type(weight), weight.dtype ,weight)
                     outputs = self(imgs, weight)
                     # the class with the highest energy is what we choose as prediction
                     _, predicted = torch.max(outputs.data, 1)
@@ -182,8 +182,8 @@ class Net(nn.Module):
             img = img.to(self.device)
             weight = weight.unsqueeze(0)
             weight = weight.to(self.device)
-            print("infer print",img.shape, type(img), weight.shape, type(weight), weight.dtype,weight)
+            #print("infer print",img.shape, type(img), weight.shape, type(weight), weight.dtype,weight)
             output = self(img, weight)
             _, predicted = torch.max(output.data, 1)
-            #return predicted.cpu().data.numpy()[0]
-            return output.detach().cpu().numpy()
+            return predicted.cpu().data.numpy()[0]
+            #return output.detach().cpu().numpy()
