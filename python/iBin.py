@@ -14,7 +14,7 @@ if __name__ == '__main__':
     #init neural network 
     net = Net(device='cuda:0')
     #Load trained model
-    net.load('iBin_net.pth')
+    net.load('iBin_net_12-01-2024_11;28.pth')
 
     #main inference loop
     while True:
