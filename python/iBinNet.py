@@ -13,7 +13,7 @@ import cv2
 
 class Net(nn.Module):
         
-        def __init__(self, csv_file, rootdir, split=0.2):
+        def __init__(self, csv_file, rootdir, split=0.2, device = None):
             super().__init__()
 
             conv_kernel_size=3
@@ -51,8 +51,16 @@ class Net(nn.Module):
             self.train_loader = DataLoader(trainset, batch_size=batch_size, sampler=train_sampler, num_workers=2)
             self.validation_loader = DataLoader(trainset, batch_size=batch_size, sampler=valid_sampler,num_workers=2)
 
-            self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
-            self.to(self.device)
+            if device:
+                self.device = device
+            else: 
+                self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
+
+            try:
+                self.to(self.device)
+            except:
+                print("device not found")
+                exit()
 
             self.conv1 = nn.Conv2d(3, 6, conv_kernel_size)
             self.pool = nn.MaxPool2d(pool_kernel_size, pool_stride)

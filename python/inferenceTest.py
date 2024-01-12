@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
 
 
-    net = Net('dataset/labels.txt', 'dataset', 0.2)
+    net = Net('dataset/labels.txt', 'dataset', 0.2, device = 'cpu')
 
 
 
