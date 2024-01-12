@@ -14,10 +14,14 @@ time.sleep(1)
 
 if __name__ == '__main__':
 
+
+
     net = Net('dataset/labels.txt', 'dataset', 0.2)
 
+
+
     #net.load('iBin_net_73.pth')
-    net.train(10)
+    net.train(2)
     net.validate()
 
     while True:
