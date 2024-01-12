@@ -5,7 +5,7 @@ from iBinCom import iBinCom
 import time
 import os
 
-iBin = iBinCom("COM5", 115200, 0)
+iBin = iBinCom(port="COM5", baudrate=115200, capDevice=0)
 ret = iBin.open()
 
 classes = ('plastic', 'cardboard', 'metal', 'glass')
