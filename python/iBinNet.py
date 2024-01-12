@@ -86,23 +86,15 @@ class Net(nn.Module):
 
             self.fc2 = nn.Linear(120, 84)
             self.fc3 = nn.Linear(84, 4)
-            #self.fc4 = nn.Linear(42, 4)
 
         def forward(self, img, weight):
             x = self.pool(F.relu(self.conv1(img)))
             x = self.pool(F.relu(self.conv2(x)))
-            #print("x shape before flatten",x.shape)
             x = torch.flatten(x, 1) # flatten all dimensions except batch
-            #print("x shape after flatten",x.shape)
-    
             weight = weight.view(-1, 1)
-            #print(x.shape,weight.shape)
             x = torch.cat((x, weight), dim=1) #input weight to fc1
-    
             x = F.relu(self.fc1(x))
             x = F.relu(self.fc2(x))
-            #x = F.relu(self.fc3(x))
-            
             x = self.fc3(x)
             return x
         
@@ -126,13 +118,8 @@ class Net(nn.Module):
                     for i, data in enumerate(self.train_loader, 0):
 
                         imgs, weight, labels = data['image'].to(self.device), data['weight'].to(self.device), data['class'].to(self.device)
-                    
-
                         optimizer.zero_grad()
                         outputs = self(imgs, weight)
-                        #print('THIS IS IT OUTPUTS')
-                        #print(outputs)
-                        
                         loss = criterion(outputs, labels)
                         loss.backward()
                         optimizer.step()
@@ -163,7 +150,6 @@ class Net(nn.Module):
 
                         imgs, weight, labels = data['image'].to(self.device), data['weight'].to(self.device), data['class'].to(self.device)
                         # calculate outputs by running images through the network
-                        #print("validate", imgs.shape, type(imgs), weight.shape, type(weight), weight.dtype ,weight)
                         outputs = self(imgs, weight)
                         # the class with the highest energy is what we choose as prediction
                         _, predicted = torch.max(outputs.data, 1)
@@ -190,7 +176,6 @@ class Net(nn.Module):
                                 correct_pred[classes[label]] += 1
                             total_pred[classes[label]] += 1
 
-
                 # print accuracy for each class
                 for classname, correct_count in correct_pred.items():
                     accuracy = 100 * float(correct_count) / total_pred[classname]
@@ -209,7 +194,6 @@ class Net(nn.Module):
             img = img.to(self.device)
             weight = weight.unsqueeze(0)
             weight = weight.to(self.device)
-            #print("infer print",img.shape, type(img), weight.shape, type(weight), weight.dtype,weight)
             output = self(img, weight)
             _, predicted = torch.max(output.data, 1)
             return predicted.cpu().data.numpy()[0]
