@@ -57,11 +57,9 @@ class Net(nn.Module):
             else: 
                 self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
 
-            try:
-                self.to(self.device)
-            except:
-                print("device not found")
-                exit()
+            self.to(self.device)
+            print("Running on", self.device)
+           
 
             self.conv1 = nn.Conv2d(3, 6, conv1_kernel_size)
             self.pool = nn.MaxPool2d(pool_kernel_size, pool_stride)
