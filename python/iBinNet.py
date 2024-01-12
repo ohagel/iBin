@@ -13,7 +13,7 @@ import cv2
 
 class Net(nn.Module):
         
-        def __init__(self, csv_file, rootdir, split=0.2, device = None):
+        def __init__(self, csv_file=None, rootdir=None, split=0.2, device = None):
             super().__init__()
 
             conv1_kernel_size=5
@@ -30,27 +30,31 @@ class Net(nn.Module):
             batch_size = 8
             self.transform = transforms.Compose([transforms.ToTensor()])
 
-            trainset = TrashDataset(csvFile=csv_file, root_dir=rootdir, transform=self.transform)
+            self.csv_file = csv_file
+            self.rootdir = rootdir
 
-            # Define the split ratio for validation set
-            validation_split = split
-            dataset_size = len(trainset)
-            indices = list(range(dataset_size))
-            split = int(np.floor(validation_split * dataset_size))
+            if self.csv_file and self.rootdir:
+                trainset = TrashDataset(csvFile=csv_file, root_dir=rootdir, transform=self.transform)
 
-            np.random.shuffle(indices)
+                # Define the split ratio for validation set
+                validation_split = split
+                dataset_size = len(trainset)
+                indices = list(range(dataset_size))
+                split = int(np.floor(validation_split * dataset_size))
 
-            # Split indices into training and validation sets
-            train_indices, val_indices = indices[split:], indices[:split]
+                np.random.shuffle(indices)
 
-            # Define samplers for obtaining batches from train and validation sets
-            train_sampler = SubsetRandomSampler(train_indices)
-            valid_sampler = SubsetRandomSampler(val_indices)
+                # Split indices into training and validation sets
+                train_indices, val_indices = indices[split:], indices[:split]
 
-            #trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
-            # Create data loaders for train and validation sets using the samplers
-            self.train_loader = DataLoader(trainset, batch_size=batch_size, sampler=train_sampler, num_workers=0)
-            self.validation_loader = DataLoader(trainset, batch_size=batch_size, sampler=valid_sampler,num_workers=2)
+                # Define samplers for obtaining batches from train and validation sets
+                train_sampler = SubsetRandomSampler(train_indices)
+                valid_sampler = SubsetRandomSampler(val_indices)
+
+                #trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
+                # Create data loaders for train and validation sets using the samplers
+                self.train_loader = DataLoader(trainset, batch_size=batch_size, sampler=train_sampler, num_workers=0)
+                self.validation_loader = DataLoader(trainset, batch_size=batch_size, sampler=valid_sampler,num_workers=2)
 
             if device:
                 self.device = device
@@ -109,75 +113,82 @@ class Net(nn.Module):
             self.to(self.device)
         
         def train(self, n_epochs):
-            criterion = nn.CrossEntropyLoss()
-            self.to(self.device)
-            #optimizer = optim.SGD(self.parameters(), lr=0.001, momentum=0.9)
-            optimizer = optim.AdamW(self.parameters(), lr=0.001)
+            if self.csv_file and self.rootdir:
+                criterion = nn.CrossEntropyLoss()
+                self.to(self.device)
+                #optimizer = optim.SGD(self.parameters(), lr=0.001, momentum=0.9)
+                optimizer = optim.AdamW(self.parameters(), lr=0.001)
 
-            for epoch in range(n_epochs):  # loop over the dataset multiple times
+                for epoch in range(n_epochs):  # loop over the dataset multiple times
 
-                running_loss = 0.0
-                for i, data in enumerate(self.train_loader, 0):
+                    running_loss = 0.0
+                    for i, data in enumerate(self.train_loader, 0):
 
-                    imgs, weight, labels = data['image'].to(self.device), data['weight'].to(self.device), data['class'].to(self.device)
-                
-
-                    optimizer.zero_grad()
-                    outputs = self(imgs, weight)
-                    #print('THIS IS IT OUTPUTS')
-                    #print(outputs)
+                        imgs, weight, labels = data['image'].to(self.device), data['weight'].to(self.device), data['class'].to(self.device)
                     
-                    loss = criterion(outputs, labels)
-                    loss.backward()
-                    optimizer.step()
 
-                    print(f'[{epoch + 1}, {i + 1:5d}] loss: {loss.item():.10f}')
-                    
-            print('Finished Training')
-            PATH = './iBin_net.pth'
-            torch.save(self.state_dict(), PATH)
+                        optimizer.zero_grad()
+                        outputs = self(imgs, weight)
+                        #print('THIS IS IT OUTPUTS')
+                        #print(outputs)
+                        
+                        loss = criterion(outputs, labels)
+                        loss.backward()
+                        optimizer.step()
+
+                        print(f'[{epoch + 1}, {i + 1:5d}] loss: {loss.item():.10f}')
+                        
+                print('Finished Training')
+                PATH = './iBin_net.pth'
+                torch.save(self.state_dict(), PATH)
+            else:
+                print("No dataset loaded")
 
         def validate(self):
-            correct = 0
-            total = 0
-            # since we're not training, we don't need to calculate the gradients for our outputs
-            with torch.no_grad():
-                for data in self.validation_loader:
+            if self.csv_file and self.rootdir:
+                correct = 0
+                total = 0
+                # since we're not training, we don't need to calculate the gradients for our outputs
+                with torch.no_grad():
+                    for data in self.validation_loader:
 
-                    imgs, weight, labels = data['image'].to(self.device), data['weight'].to(self.device), data['class'].to(self.device)
-                    # calculate outputs by running images through the network
-                    #print("validate", imgs.shape, type(imgs), weight.shape, type(weight), weight.dtype ,weight)
-                    outputs = self(imgs, weight)
-                    # the class with the highest energy is what we choose as prediction
-                    _, predicted = torch.max(outputs.data, 1)
-                    total += labels.size(0)
-                    correct += (predicted == labels).sum().item()
-            
-            print(f'Accuracy of the network: {100 * correct // total} %')
-            
+                        imgs, weight, labels = data['image'].to(self.device), data['weight'].to(self.device), data['class'].to(self.device)
+                        # calculate outputs by running images through the network
+                        #print("validate", imgs.shape, type(imgs), weight.shape, type(weight), weight.dtype ,weight)
+                        outputs = self(imgs, weight)
+                        # the class with the highest energy is what we choose as prediction
+                        _, predicted = torch.max(outputs.data, 1)
+                        total += labels.size(0)
+                        correct += (predicted == labels).sum().item()
+                
+                print(f'Accuracy of the network: {100 * correct // total} %')
+                
 
-            classes = ('plastic', 'cardboard', 'metal', 'glass')
-            # prepare to count predictions for each class
-            correct_pred = {classname: 0 for classname in classes}
-            total_pred = {classname: 0 for classname in classes}
+                classes = ('plastic', 'cardboard', 'metal', 'glass')
+                # prepare to count predictions for each class
+                correct_pred = {classname: 0 for classname in classes}
+                total_pred = {classname: 0 for classname in classes}
 
-            # again no gradients needed
-            with torch.no_grad():
-                for data in self.validation_loader:
-                    imgs, weight, labels = data['image'].to(self.device), data['weight'].to(self.device), data['class'].to(self.device)
-                    outputs = self(imgs, weight)
-                    _, predictions = torch.max(outputs, 1)
-                    # collect the correct predictions for each class
-                    for label, prediction in zip(labels, predictions):
-                        if label == prediction:
-                            correct_pred[classes[label]] += 1
-                        total_pred[classes[label]] += 1
+                # again no gradients needed
+                with torch.no_grad():
+                    for data in self.validation_loader:
+                        imgs, weight, labels = data['image'].to(self.device), data['weight'].to(self.device), data['class'].to(self.device)
+                        outputs = self(imgs, weight)
+                        _, predictions = torch.max(outputs, 1)
+                        # collect the correct predictions for each class
+                        for label, prediction in zip(labels, predictions):
+                            if label == prediction:
+                                correct_pred[classes[label]] += 1
+                            total_pred[classes[label]] += 1
 
 
-            # print accuracy for each class
-            for classname, correct_count in correct_pred.items():
-                accuracy = 100 * float(correct_count) / total_pred[classname]
-                print(f'Accuracy for class: {classname:5s} is {accuracy:.1f} %')
+                # print accuracy for each class
+                for classname, correct_count in correct_pred.items():
+                    accuracy = 100 * float(correct_count) / total_pred[classname]
+                    print(f'Accuracy for class: {classname:5s} is {accuracy:.1f} %')
+
+            else:
+                print("No dataset loaded")
 
         def infer(self, img, weight):
             img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)

@@ -5,24 +5,22 @@ from iBinCom import iBinCom
 import time
 import os
 
+#init iBin communication
 iBin = iBinCom(port="COM5", baudrate=115200, capDevice=0)
 ret = iBin.open()
+time.sleep(1) #small delay to let the microcontroller boot
 
-classes = ('plastic', 'cardboard', 'metal', 'glass')
-
-time.sleep(1)
+#defining classes
+classes = ('plastic', 'cardboard', 'metal', 'glass') 
 
 if __name__ == '__main__':
+    #init neural network with or without dataset
+    #net = Net('dataset/labels.txt', 'dataset', 0.2, device='cuda:0')
+    net = Net(device='cuda:0')
 
-
-
-    net = Net('dataset/labels.txt', 'dataset', 0.2)
-
-
-
-    #net.load('iBin_net_73.pth')
-    net.train(2)
-    net.validate()
+    net.load('iBin_net.pth')
+    #net.train(2)
+    #net.validate()
 
     while True:
         frame = iBin.getFrame()
