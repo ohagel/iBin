@@ -20,9 +20,9 @@ if __name__ == '__main__':
 
 
 
-    #net.load('iBin_net_73.pth')
-    net.train(2)
-    net.validate()
+    net.load('iBin_net.pth')
+    #net.train(2)
+    #net.validate()
 
     while True:
         frame = iBin.getFrame()
