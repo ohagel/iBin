@@ -15,19 +15,18 @@ classes = ('plastic', 'cardboard', 'metal', 'glass')
 
 if __name__ == '__main__':
     #init neural network with or without dataset
-    #net = Net('dataset/labels.txt', 'dataset', 0.2, device='cuda:0')
-    net = Net(device='cuda:0')
+    net = Net('dataset/labels.txt', 'dataset', 0.2, device='cuda:0')
+    #net = Net(device='cuda:0')
 
-    net.load('iBin_net.pth')
-    #net.train(2)
-    #net.validate()
-
+    #net.load('iBin_net.pth')
+    net.train(2)
+    net.validate()
+    
     while True:
         frame = iBin.getFrame()
-        shownFrame = frame
+        shownFrame = frame 
         if not iBin.getLid():
             iBin.setLight(True)
-            
             weight = iBin.getWeight()
             res = net.infer(frame , weight)
             cv2.putText(shownFrame, "Class: " + str(classes[res]), (10, 20), cv2.FONT_HERSHEY_SIMPLEX, 0.5, (255, 255, 255), 1, cv2.LINE_AA)
