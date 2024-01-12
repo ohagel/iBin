@@ -3,16 +3,14 @@ import cv2
 from iBinCom import iBinCom
 import time
 
-
-#init iBin communication
-iBin = iBinCom(port="COM5", baudrate=115200, capDevice=0)
-ret = iBin.open()
-time.sleep(1) #small delay to let the microcontroller boot
-
-#defining classes
-classes = ('plastic', 'cardboard', 'metal', 'glass') 
-
 if __name__ == '__main__':
+    #init iBin communication
+    iBin = iBinCom(port="COM5", baudrate=115200, capDevice=0)
+    ret = iBin.open()
+    time.sleep(1) #small delay to let the microcontroller boot
+
+    #defining classes
+    classes = ('plastic', 'cardboard', 'metal', 'glass') 
     #init neural network 
     net = Net(device='cuda:0')
     #Load trained model
