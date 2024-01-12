@@ -10,6 +10,7 @@ import os
 from trashDataset import TrashDataset
 from torch.utils.data import DataLoader, SubsetRandomSampler
 import cv2
+import datetime
 
 class Net(nn.Module):
         
@@ -112,7 +113,7 @@ class Net(nn.Module):
             self.load_state_dict(torch.load(model_path))
             self.to(self.device)
         
-        def train(self, n_epochs):
+        def train(self, n_epochs, save_path=None):
             if self.csv_file and self.rootdir:
                 criterion = nn.CrossEntropyLoss()
                 self.to(self.device)
@@ -139,8 +140,16 @@ class Net(nn.Module):
                         print(f'[{epoch + 1}, {i + 1:5d}] loss: {loss.item():.10f}')
                         
                 print('Finished Training')
-                PATH = './iBin_net.pth'
+                if save_path:
+                    PATH = save_path
+                    print("saving model to", PATH, "...")
+                else:
+                    ##save model with timestamp as dd/mm/YY H:M
+                    now = datetime.datetime.now()
+                    PATH = './iBin_net_' + now.strftime("%d-%m-%Y_%H;%M") + '.pth'
+                    print("saving model to", PATH, "...")
                 torch.save(self.state_dict(), PATH)
+                
             else:
                 print("No dataset loaded")
 
