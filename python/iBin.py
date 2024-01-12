@@ -1,9 +1,8 @@
 from iBinNet import Net
 import cv2
-import numpy as np
 from iBinCom import iBinCom
 import time
-import os
+
 
 #init iBin communication
 iBin = iBinCom(port="COM5", baudrate=115200, capDevice=0)
@@ -14,14 +13,12 @@ time.sleep(1) #small delay to let the microcontroller boot
 classes = ('plastic', 'cardboard', 'metal', 'glass') 
 
 if __name__ == '__main__':
-    #init neural network with or without dataset
-    net = Net('dataset/labels.txt', 'dataset', 0.2, device='cuda:0')
-    #net = Net(device='cuda:0')
+    #init neural network 
+    net = Net(device='cuda:0')
+    #Load trained model
+    net.load('iBin_net.pth')
 
-    #net.load('iBin_net.pth')
-    net.train(2, save_path='iBin_net')
-    net.validate()
-
+    #main inference loop
     while True:
         frame = iBin.getFrame()
         shownFrame = frame 
