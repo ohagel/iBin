@@ -18,9 +18,9 @@ class Net(nn.Module):
 
             conv1_kernel_size=5
             conv2_kernel_size=3
-            pool_kernel_size=20
+            pool_kernel_size=10
             conv_stride=1
-            pool_stride=20
+            pool_stride=10
             input_size=480
 
             seed = 42

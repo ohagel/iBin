@@ -5,14 +5,14 @@ import cv2
 import numpy as np
 
 class iBinCom:
-    def __init__(self, port, baudrate):
+    def __init__(self, port, baudrate, capDevice=1):
 
         self.opened = False
         self.port = port
         self.baudrate = baudrate
         self.width = 640
         self.height = 480
-        self.cap = cv2.VideoCapture(1, cv2.CAP_DSHOW)
+        self.cap = cv2.VideoCapture(capDevice, cv2.CAP_DSHOW)
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
 
