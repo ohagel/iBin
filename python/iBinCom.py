@@ -16,6 +16,8 @@ class iBinCom:
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
 
+        self.lid = 1
+
         self.weight = 0
 
     def open(self):
@@ -60,7 +62,9 @@ class iBinCom:
     def getLid(self):
         if self.opened:
             self.sendPacket(0, 0, 0)
-            return self.recivePacket()
+            state = self.recivePacket()
+            self.lid = self.lid + 0.1*(state-self.lid)
+            return False if self.lid < 0.5 else True
 
 
     def test(self):
