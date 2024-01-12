@@ -63,7 +63,7 @@ class iBinCom:
         if self.opened:
             self.sendPacket(0, 0, 0)
             state = self.recivePacket()
-            self.lid = self.lid + 1*(state-self.lid)
+            self.lid = self.lid + 0.75*(state-self.lid)
             return False if self.lid < 0.5 else True
 
 
