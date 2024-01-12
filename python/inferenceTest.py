@@ -30,9 +30,9 @@ if __name__ == '__main__':
 
 
 
-    net.load('iBin_net_73.pth')
-    #net.train(100)
-    #net.validate()
+    #net.load('iBin_net_73.pth')
+    net.train(10)
+    net.validate()
 
 
     while True:

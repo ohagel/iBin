@@ -16,10 +16,11 @@ class Net(nn.Module):
         def __init__(self, csv_file, rootdir, split=0.2):
             super().__init__()
 
-            conv_kernel_size=3
-            pool_kernel_size=2
+            conv1_kernel_size=5
+            conv2_kernel_size=3
+            pool_kernel_size=20
             conv_stride=1
-            pool_stride=2
+            pool_stride=20
             input_size=480
 
             seed = 42
@@ -48,22 +49,22 @@ class Net(nn.Module):
 
             #trainloader = torch.utils.data.DataLoader(trainset, batch_size=batch_size, shuffle=True, num_workers=2)
             # Create data loaders for train and validation sets using the samplers
-            self.train_loader = DataLoader(trainset, batch_size=batch_size, sampler=train_sampler, num_workers=2)
+            self.train_loader = DataLoader(trainset, batch_size=batch_size, sampler=train_sampler, num_workers=0)
             self.validation_loader = DataLoader(trainset, batch_size=batch_size, sampler=valid_sampler,num_workers=2)
 
             self.device = torch.device('cuda:0' if torch.cuda.is_available() else 'cpu')
             self.to(self.device)
 
-            self.conv1 = nn.Conv2d(3, 6, conv_kernel_size)
+            self.conv1 = nn.Conv2d(3, 6, conv1_kernel_size)
             self.pool = nn.MaxPool2d(pool_kernel_size, pool_stride)
-            self.conv2 = nn.Conv2d(6, 16, conv_kernel_size)
+            self.conv2 = nn.Conv2d(6, 16, conv2_kernel_size)
 
             #update input after conv1
-            self.fc1_input_size = self.calc_input_size(input_size, conv_kernel_size, conv_stride)
+            self.fc1_input_size = self.calc_input_size(input_size, conv1_kernel_size, conv_stride)
             #update input after pool1
             self.fc1_input_size = self.calc_input_size(self.fc1_input_size, pool_kernel_size, pool_stride)
             #update input after conv2
-            self.fc1_input_size = self.calc_input_size(self.fc1_input_size, conv_kernel_size, conv_stride)
+            self.fc1_input_size = self.calc_input_size(self.fc1_input_size, conv2_kernel_size, conv_stride)
             #update input after pool2
             self.fc1_input_size = self.calc_input_size(self.fc1_input_size, pool_kernel_size, pool_stride)
         
