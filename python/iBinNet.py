@@ -17,7 +17,7 @@ class Net(nn.Module):
         def __init__(self, csv_file=None, rootdir=None, split=0.2, device = None):
             super().__init__()
 
-            conv1_kernel_size=5
+            conv1_kernel_size=3
             conv2_kernel_size=3
             pool_kernel_size=10
             conv_stride=1

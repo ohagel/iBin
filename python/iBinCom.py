@@ -49,10 +49,11 @@ class iBinCom:
 
     def setLight(self, state):
         if self.opened:
-            if state:
-                self.sendPacket(1, 2, 255)
-            else:
-                self.sendPacket(1, 2, 0)
+            #if state:
+            #    self.sendPacket(1, 2, 255)
+            #else:
+            #    self.sendPacket(1, 2, 0)
+            self.sendPacket(1, 2, state)
 
     def getWeight(self):
         if self.opened:
@@ -62,9 +63,7 @@ class iBinCom:
     def getLid(self):
         if self.opened:
             self.sendPacket(0, 0, 0)
-            state = self.recivePacket()
-            self.lid = self.lid + 0.75*(state-self.lid)
-            return False if self.lid < 0.5 else True
+            return False if self.recivePacket() < 1500 else True
 
 
     def test(self):

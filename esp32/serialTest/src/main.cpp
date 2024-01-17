@@ -17,13 +17,13 @@ Adafruit_NeoPixel pixels = Adafruit_NeoPixel(NUMPIXELS, PIN, NEO_GRB + NEO_KHZ80
 
 void setup() {
   // put your setup code here, to run once:
-  pinMode(HALL_PIN, INPUT_PULLUP);
+  //pinMode(HALL_PIN, INPUT_PULLUP);
   pixels.begin();
   pixels.show();
   scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
   float calibrationfactor = (62860)/(170);
   scale.set_scale(calibrationfactor);
-  scale.tare(5);
+  scale.tare(10);
   Serial.begin(115200);
 }
 
@@ -45,14 +45,14 @@ void loop() {
     {
     case 0:
       if (!recvData[0]) {
-        values[0] = digitalRead(HALL_PIN);
+        values[0] = (int)analogRead(HALL_PIN);
         byte buf[] = {0, 0, values[0]>>24, values[0]>>16, values[0]>>8, values[0]};
         Serial.write(buf, 6);
       }
       break;
     case 1:
       if (!recvData[0]) {
-        values[1] = (int)scale.get_units(5);
+        values[1] = (int)scale.get_units(1);
         byte buf[] = {0, 0, values[1]>>24, values[1]>>16, values[1]>>8, values[1]};
         Serial.write(buf, 6);
       }
