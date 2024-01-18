@@ -19,6 +19,7 @@ if __name__ == '__main__':
 
     #main inference loop
     startTime = 0
+    lidTime = 0
     while True:
         endTime = time.time()
         frame = iBin.getFrame()
@@ -26,12 +27,14 @@ if __name__ == '__main__':
         textFrame = np.zeros((frame.shape[0], frame.shape[1], 3), dtype=np.uint8)
         if not iBin.getLid():
             iBin.setLight(255)
-            weight = iBin.getWeight()
-            res = net.infer(frame , weight)
-            cv2.putText(textFrame, "Class: " + str(classes[res]), (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 2)#, cv2.LINE_AA)
-            cv2.putText(textFrame, "Weight: " + str(weight), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 2)#, cv2.LINE_AA)
+            if time.time() - lidTime > 0.5: #delay inference to let the camera adjust to the light
+                weight = iBin.getWeight()
+                res = net.infer(frame , weight)
+                cv2.putText(textFrame, "Class: " + str(classes[res]), (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 2)#, cv2.LINE_AA)
+                cv2.putText(textFrame, "Weight: " + str(weight), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 2)#, cv2.LINE_AA)
             cv2.putText(textFrame, "FPS: " + "{:.2f}".format(1/(endTime-startTime)), (10, 75), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 2)#, cv2.LINE_AA)
         else:
+            lidTime = time.time()
             iBin.setLight(0)
             cv2.putText(textFrame, "Lid open", (10, 25), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 2)#, cv2.LINE_AA)
             cv2.putText(textFrame, "FPS: " + "{:.2f}".format(1/(endTime-startTime)), (10, 50), cv2.FONT_HERSHEY_SIMPLEX, 0.75, (255, 255, 255), 2)#, cv2.LINE_AA)

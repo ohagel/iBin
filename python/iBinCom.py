@@ -34,17 +34,15 @@ class iBinCom:
         if self.opened:
             self.ser.close()
 
-    def sendPacket(self, type, addr, data):
+    def sendPacket(self, msgType, addr, data):
         if self.opened:
             data = data.to_bytes(4, byteorder='big')
-            bytePacket = bytearray([type,addr,data[0],data[1],data[2],data[3]])
-            #print(bytePacket)
+            bytePacket = bytearray([msgType,addr,data[0],data[1],data[2],data[3]])
             self.ser.write(bytePacket)
 
     def recivePacket(self):
         if self.opened:
             recvData = self.ser.read(6)
-            #print(recvData)
             return int.from_bytes(recvData[2:], byteorder='big', signed=True)
 
     def setLight(self, state):
