@@ -6,7 +6,7 @@ import numpy as np
 
 if __name__ == '__main__':
     #init iBin communication
-    iBin = iBinCom(port="COM3", baudrate=115200, capDevice=1)
+    iBin = iBinCom(port="COM3", baudrate=115200, capDevice=0)
     ret = iBin.open()
     time.sleep(1) #small delay to let the microcontroller boot
 
@@ -15,7 +15,7 @@ if __name__ == '__main__':
     #init neural network 
     net = Net(device='cuda:0')
     #Load trained model
-    net.load('iBin_net2_16-01-2024_19;40.pth')
+    net.load('iBin_net2_23-01-2024_13;49.pth')
 
     #main inference loop
     startTime = 0
